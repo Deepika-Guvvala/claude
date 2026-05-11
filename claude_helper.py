@@ -5,11 +5,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class ChatBot:
-    def __init__(self, system_prompt=None):
+    def __init__(self, system_prompt=None, temperature = None):
         self.client = Anthropic()
         self.model = os.getenv("MODEL")
         self.max_tokens = 300
         self.system_prompt = system_prompt
+        self.temperature = temperature
         self.messages = []
 
     def add_user_message(self, content):
@@ -23,6 +24,9 @@ class ChatBot:
         kwargs = dict(model=self.model, max_tokens=self.max_tokens, messages=self.messages)
         if self.system_prompt:
             kwargs["system"] = self.system_prompt
+        if self.temperature:
+            kwargs["temperature"] = self.temperature
+
         response = self.client.messages.create(**kwargs)
         reply = response.content[0].text
         self.add_assistant_message(reply)
